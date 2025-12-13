@@ -152,4 +152,4 @@ env.docs = {commands = [
 gh.python."3.9" = ["py39"]
 gh.python."3.11" = ["py311"]
 gh.python."3.12" = ["py312"]
-gh.python."3.13" = ["py313"]
+#gh.python."3.13" = ["py313"]
