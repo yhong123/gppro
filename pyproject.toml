@@ -120,10 +120,13 @@ overrides."tool.tox.env_run_base.commands".inline_arrays = false
 
 [tool.tox]
 env_list = [
-    "py311",
-    "py312",
-    "py313",
+    "py309",
 ]
+#env_list = [
+#    "py311",
+#    "py312",
+#    "py313",
+#]
 env_run_base = {commands = [
     [
         "pytest",
@@ -142,6 +145,7 @@ env.docs = {commands = [
 ], dependency_groups = [
     "docs",
 ]}
+gh.python."3.9" = ["py309"]
 gh.python."3.11" = ["py311"]
 gh.python."3.12" = ["py312"]
 gh.python."3.13" = ["py313"]
