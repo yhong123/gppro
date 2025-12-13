@@ -43,7 +43,7 @@ dependencies = [
     "torch",
     "gpytorch",
     "scikit-learn",
-    "scipy>=1.6.0",
+    "scipy",
 ]
 description = "A python package implementing product-of-experts Gaussian process model with information-based calibration."
 dynamic = [
