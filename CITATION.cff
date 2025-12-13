@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Ong"
+    given-names: "YH"
+    email: "yean-hoon.ong@ucl.ac.uk"
+repository-code: "https://github.com/yhong123/gppro"
+title: "Product-of-experts Gaussian Process Model: A python package implementing product-of-experts Gaussian process model with information-based calibration."
+license: "MIT"
