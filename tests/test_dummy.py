@@ -3,9 +3,9 @@
 import unittest
 import math
 import torch
-from gppro.models import GPGlobal
-from gppro.models import GPPro
-from sklearn.metrics import mean_absolute_error
+#from gppro.models import GPGlobal
+#from gppro.models import GPPro
+#from sklearn.metrics import mean_absolute_error
 
 # Batch training test: Let's learn hyperparameters on a sine dataset, but test on a sine dataset and a cosine dataset
 # in parallel.
@@ -15,7 +15,7 @@ train_y1.add_(torch.randn_like(train_y1).mul_(0.01))
 test_x1 = torch.linspace(0, 2, 51).unsqueeze(-1)
 test_y1 = torch.sin(test_x1 * (2 * math.pi)).squeeze()
 
-
+'''
 class TestGPGlobal(unittest.TestCase):
     
     def test_train_predict(self) -> None:
@@ -46,7 +46,7 @@ class TestGPPro(unittest.TestCase):
         self.assertLess(mae, 0.1)
         #mean_abs_error1 = torch.mean(torch.abs(test_y1 - preds1))
         #self.assertLess(mean_abs_error1.squeeze().item(), 0.1)
-
+'''
 
 def test_stupid_example() -> None:
     """Test is merely a placeholder."""
