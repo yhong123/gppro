@@ -109,46 +109,6 @@ class GPPro:
                 
         """ Partition training data points using balltree assignment method. """
         
-        if self.partition_type == 'balltree':
-            
-            self.partition = []
-            # For a specified leaf_size, a leaf node is guaranteed to satisfy leaf_size <= n_points <= 2 * leaf_size
-            leaf_size = self.points_per_experts #self.N  #math.ceil(self.N * 0.8)
-            #print("leaf_size: ", leaf_size)
-            tree = BallTree(X, leaf_size=leaf_size )
-            
-            (
-                _,
-                idx_array,
-                node_data,
-                node_bounds,
-            ) = tree.get_arrays()
-            
-            node_num = len(node_data)
-            #print("node_num: ", node_num)
-            #print("node_data: ", node_data)
-            
-            
-            # refer: https://github.com/scikit-learn/scikit-learn/blob/5fc67aeb092d636895b599921283221a68c7a2ad/sklearn/neighbors/_binary_tree.pxi.tp#L70
-            # idx_array:  [ 4 16 14  3 17  2  5 15 18  1  0 13 12  7 19  6  8 11  9 10]
-            #    node_data:  [( 0, 20, 0, 9.46959669) ( 0, 10, 0, 4.18949154) (10, 20, 0, 4.33743037)
-            #     ( 0,  5, 1, 1.7828874 ) ( 5, 10, 1, 2.31874586) (10, 15, 1, 2.36866319)
-            #     (15, 20, 1, 2.63786701)]
-            
-            for node in node_data:
-                idx_start, idx_end, is_leaf, radius = node
-                ls_idx = idx_array[idx_start:idx_end] 
-                if (is_leaf):
-                    self.partition.append(np.array(ls_idx))
-            
-            # update self.M, because the number of leaf might be fewer than the original M
-            self.M = len(self.partition)
-            #print("self.M updated: ", self.M )
-            ls_size_ = [] 
-            for i in range(self.M):
-                ls_size_.append(len(self.partition[i]))
-            #print("ls_size_: ", ls_size_)
-            
         
         if self.partition_type == 'balltree2':
             
@@ -166,11 +126,7 @@ class GPPro:
                 node_bounds,
             ) = tree.get_arrays()
             
-            node_num = len(node_data)
-            #print("node_num: ", node_num)
-            #print("node_data: ", node_data)
-            
-            
+            #node_num = len(node_data)
             
             ls_join = []
             
