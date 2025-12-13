@@ -18,22 +18,21 @@
 
 A python package implementing product-of-experts Gaussian process model with information-based calibration.
 
-This project is developed in collaboration with the
-[Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University
-College London.
+<!-- This project is developed in collaboration with the  -->
+<!-- [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University College London.  -->
 
-## About
+<!-- ## About  -->
 
-### Project Team
+<!-- ### Project Team  -->
 
-YH Ong ([yean-hoon.ong@ucl.ac.uk](mailto:yean-hoon.ong@ucl.ac.uk))
+<!-- YH Ong ([yean-hoon.ong@ucl.ac.uk](mailto:yean-hoon.ong@ucl.ac.uk))  -->
 
 <!-- TODO: how do we have an array of collaborators ? -->
 
-### Research Software Engineering Contact
+<!-- ### Research Software Engineering Contact  -->
 
-Centre for Advanced Research Computing, University College London
-([arc.collaborations@ucl.ac.uk](mailto:arc.collaborations@ucl.ac.uk))
+<!-- Centre for Advanced Research Computing, University College London  -->
+<!-- ([arc.collaborations@ucl.ac.uk](mailto:arc.collaborations@ucl.ac.uk))  -->
 
 ## Built With
 
