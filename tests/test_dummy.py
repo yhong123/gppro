@@ -3,7 +3,7 @@
 import unittest
 import math
 import torch
-#from gppro.models import GPGlobal
+from gppro.models import GPGlobal
 #from gppro.models import GPPro
 #from sklearn.metrics import mean_absolute_error
 
