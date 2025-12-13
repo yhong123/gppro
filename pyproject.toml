@@ -53,7 +53,7 @@ license-files = [
 ]
 name = "gppro"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 urls.homepage = "https://github.com/yhong123/gppro"
 
 [tool.coverage]
