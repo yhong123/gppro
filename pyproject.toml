@@ -40,6 +40,10 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "torch",
+    "gpytorch",
+    "scikit-learn",
+    "scipy>=1.6.0",
 ]
 description = "A python package implementing product-of-experts Gaussian process model with information-based calibration."
 dynamic = [
@@ -132,6 +136,10 @@ env_run_base = {commands = [
         "pytest",
         "--cov",
         "--cov-report=xml",
+        "torch",
+        "gpytorch",
+        "scikit-learn",
+        "scipy>=1.6.0",
     ],
 ], dependency_groups = [
     "test",
