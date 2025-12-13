@@ -36,7 +36,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+    #"Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
 dependencies = [
@@ -57,7 +57,7 @@ license-files = [
 ]
 name = "gppro"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<3.13"
 urls.homepage = "https://github.com/yhong123/gppro"
 
 [tool.coverage]
@@ -124,26 +124,18 @@ overrides."tool.tox.env_run_base.commands".inline_arrays = false
 
 [tool.tox]
 env_list = [
-    "py309",
-    "torch",
-    "gpytorch",
-    "scikit-learn",
-    "scipy>=1.6.0",
+    "py39",
 ]
 #env_list = [
 #    "py311",
 #    "py312",
 #    "py313",
 #]
-env_run_base = {commands = [
+env_run_base = {package = "wheel", commands = [
     [
         "pytest",
         "--cov",
         "--cov-report=xml",
-        "torch",
-        "gpytorch",
-        "scikit-learn",
-        "scipy>=1.6.0",
     ],
 ], dependency_groups = [
     "test",
@@ -157,7 +149,7 @@ env.docs = {commands = [
 ], dependency_groups = [
     "docs",
 ]}
-gh.python."3.9" = ["py309"]
+gh.python."3.9" = ["py39"]
 gh.python."3.11" = ["py311"]
 gh.python."3.12" = ["py312"]
 gh.python."3.13" = ["py313"]
