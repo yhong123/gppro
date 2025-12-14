@@ -18,11 +18,13 @@ class GPBase(gpytorch.models.ExactGP):
     Args:
         train_x: The training features.
         train_y: The training targets.
-        likelihood: The Gaussian likelihood that defines the observational distribution. 
+        likelihood: The Gaussian likelihood that defines the observational 
+                    distribution. 
 
     Returns:
-        Calling this model will return the posterior of the latent Gaussian process when conditioned
-        on the training data. The output will be a :obj:`~gpytorch.distributions.MultivariateNormal`.
+        Calling this model will return the posterior of the latent Gaussian 
+        process when conditioned on the training data. The output will be a 
+        obj gpytorch.distributions.MultivariateNormal.
 
     """
 
@@ -34,7 +36,8 @@ class GPBase(gpytorch.models.ExactGP):
         Args:
             train_x: The training features.
             train_y: The training targets.
-            likelihood: The Gaussian likelihood that defines the observational distribution. 
+            likelihood: The Gaussian likelihood that defines the observational 
+            distribution.
 
         Returns:
             None.
