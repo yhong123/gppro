@@ -15,8 +15,8 @@ def compute_evaluation(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     Compute Mean Absolute Error & Root Mean Squared Error.
 
     Args:
-        y_true: Actual target values.
-        y_pred: Predicted target values.
+        y_true: The actual target values.
+        y_pred: The predicted target values.
 
     Returns:
         Computed MAE & RMSE.
