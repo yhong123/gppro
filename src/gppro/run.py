@@ -23,33 +23,33 @@ X_train, y_train, X_test, y_test = generate_synthetic_data_2()
 #  MODEL - GP 
 # ===============================================================
 
-print("\n Model: GP")
+print("\n Model: GP") # noqa: T201
 
 gp = GPGlobal()
 gp.train(X_train, y_train) #.values)
 
 test_mean, test_var = gp.predict(X_test)  # return torch.Tensor
 
-print("Test:")
+print("Test:") # noqa: T201
 mae, rmse = compute_evaluation(y_test, test_mean)
-print("MAE:", mae)
-print("RMSE:", rmse)
+print("MAE:", mae) # noqa: T201
+print("RMSE:", rmse) # noqa: T201
 
 
 # ===============================================================
 #  MODEL - GP-pro
 # ===============================================================
 
-print("\n Model: GP-pro")
+print("\n Model: GP-pro") # noqa: T201
 
 gp_pro = GPPro()
 gp_pro.train(X_train, y_train) #.values)
 test_mean, test_var = gp_pro.predict(X_test)   # return np.ndarray
 
-print("Test:")
+print("Test:") # noqa: T201
 mae, rmse = compute_evaluation(y_test, test_mean)
-print("MAE:", mae)
-print("RMSE:", rmse)
+print("MAE:", mae) # noqa: T201
+print("RMSE:", rmse) # noqa: T201
 
 
 

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """ Data package. """
 
 from .synthetic_data import generate_synthetic_data_1

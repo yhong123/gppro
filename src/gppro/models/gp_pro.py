@@ -163,7 +163,7 @@ class GPPro:
         # Compute number of points experts 
         self.N = int(x.shape[0] / self.M)
         
-        print("M: ", self.M, ", N: ", self.N)
+        print("M: ", self.M, ", N: ", self.N) # noqa: T201
         
         # If random partition, assign random subsets of data to each expert
         if self.partition_type == 'random':
@@ -218,9 +218,6 @@ class GPPro:
         likelihoods = []
         models = []
         for i in range(self.M):
-            #sub_train_x = torch.tensor( train_x[self.partition[i]] ).contiguous()
-            #sub_train_fx = torch.tensor( 
-            #            np.ravel(train_fx[self.partition[i]]) ).contiguous()
             sub_train_x = train_x[self.partition[i]] 
             sub_train_fx = train_fx[self.partition[i]]
             likelihood_ = gpytorch.likelihoods.GaussianLikelihood()
@@ -249,7 +246,7 @@ class GPPro:
             loss.backward()
             print(
                 f"Iter {i + 1}/{training_iterations} - Loss: {loss.item():.3f}"
-            )
+            ) # noqa: T201
             optimizer.step()
          
         # Set into eval mode

@@ -57,7 +57,7 @@ class GPGlobal():
             output1 = self.gp(x_train_torch)
             loss = -mll1(output1, y_train_torch) 
             loss.backward()
-            print(f"[{i+1}/50] Loss: {loss.item():.4f}")
+            print(f"[{i+1}/50] Loss: {loss.item():.4f}") # noqa: T201
             optimizer.step()    
             
         self.gp.eval() 
