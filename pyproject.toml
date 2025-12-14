@@ -131,8 +131,8 @@ env_list = [
 #    "py312",
 #    "py313",
 #]
-env_run_base = {package = "wheel", # ask tox to install my package
-commands = [
+# package = "wheel" - ask tox to install my package
+env_run_base = {package = "wheel", commands = [
     [
         "pytest",
         "--cov",
