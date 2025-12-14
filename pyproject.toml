@@ -57,7 +57,7 @@ license-files = [
 ]
 name = "gppro"
 readme = "README.md"
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.9,<3.13" # PyTorch does not support 3.14
 urls.homepage = "https://github.com/yhong123/gppro"
 
 [tool.coverage]
@@ -131,7 +131,8 @@ env_list = [
 #    "py312",
 #    "py313",
 #]
-env_run_base = {package = "wheel", commands = [
+env_run_base = {package = "wheel", # ask tox to install my package
+commands = [
     [
         "pytest",
         "--cov",
