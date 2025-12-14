@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Created on Sun Nov 30 17:22:57 2025.
 
-@author: localadmin.
+@author: yhong.
 """
 
 from data.synthetic_data import generate_synthetic_data_2

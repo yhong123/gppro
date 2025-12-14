@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Created on Sun Dec 14 18:19:25 2025.
 
-@author: localadmin.
+@author: yhong.
 """
 
 import torch

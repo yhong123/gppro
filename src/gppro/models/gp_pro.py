@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Created on Fri Mar  3 17:14:25 2023.
 
@@ -71,7 +70,7 @@ class GPPro:
             
             
         # check if there is any left out
-        ls_join = []
+        ls_join: list[int] = []
         for i in range(self.M):
             ls_join = ls_join + self.partition[i].tolist()
         ls_all_idx = range(x.shape[0]) 
@@ -158,7 +157,8 @@ class GPPro:
             node_bounds,
         ) = tree.get_arrays()
         
-        ls_join = []
+        
+        ls_join: list[int] = []
         
         # start from leaf
         num_from_leaf = 0
