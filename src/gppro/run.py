@@ -70,7 +70,9 @@ test_mean, test_var = gp.predict(X_test)  # return torch.Tensor
 #print("y_test type: ", type(y_test))
 
 print("Test:")
-compute_evaluation(y_test, test_mean)
+mae, rmse = compute_evaluation(y_test, test_mean)
+print("MAE:", mae)
+print("RMSE:", rmse)
 #print("Val:")
 #compute_evaluation(y_val, val_mean)
 #print("", torch.mean(torch.abs(y_test - test_mean)))
@@ -90,7 +92,9 @@ test_mean, test_var = gp_pro.predict(X_test)   # return np.ndarray
 #print("test_mean type: ", type(test_mean))
 
 print("Test:")
-compute_evaluation(y_test, test_mean)
+mae, rmse = compute_evaluation(y_test, test_mean)
+print("MAE:", mae)
+print("RMSE:", rmse)
 #print("Val:")
 #compute_evaluation(y_val, val_mean)
 #print("", torch.mean(torch.abs(y_test - torch.from_numpy(test_mean))))
