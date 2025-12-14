@@ -19,7 +19,7 @@ class GPBase(gpytorch.models.ExactGP):
         train_x: The training features.
         train_y: The training targets.
         likelihood: The Gaussian likelihood that defines the observational
-                    distribution. 
+                    distribution.
 
     Returns:
         Calling this model will return the posterior of the latent Gaussian
@@ -37,7 +37,7 @@ class GPBase(gpytorch.models.ExactGP):
             train_x: The training features.
             train_y: The training targets.
             likelihood: The Gaussian likelihood that defines the observational
-            distribution.
+                        distribution.
 
         Returns:
             None.
@@ -49,11 +49,11 @@ class GPBase(gpytorch.models.ExactGP):
         ard_dims = train_x.shape[1]
         self.covar_module = gpytorch.kernels.ScaleKernel( 
                             gpytorch.kernels.MaternKernel(ard_num_dims=ard_dims) )
-        '''
-        self.covar_module = gpytorch.kernels.ScaleKernel(
-            gpytorch.kernels.RBFKernel()
-        )
-        '''
+        
+        #self.covar_module = gpytorch.kernels.ScaleKernel(
+        #    gpytorch.kernels.RBFKernel()
+        #)
+        
 
     def forward(self, x: Tensor) -> MultivariateNormal:
         """
