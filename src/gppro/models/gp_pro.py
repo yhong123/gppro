@@ -36,7 +36,59 @@ class GPPro:
         self.weighting = 'diff_entr'
         self.min_point_in_cluster = 3
 
-    
+
+    def train(self, x: np.ndarray, y: np.ndarray) -> None:
+        """
+        Initiate the individual experts and fit their hyperparameters.
+
+        Args: 
+            x: dimension: n_train_points x dim_x : Training inputs.
+            y: dimension: n_train_points x 1 : Training labels.
+
+        """
+        
+        # Compute number of experts 
+        self.M = int(np.max([int(x.shape[0]) / self.points_per_experts, 1]))
+        
+        # Compute number of points experts 
+        self.N = int(x.shape[0] / self.M)
+        
+        print("M: ", self.M, ", N: ", self.N) # noqa: T201
+        
+        # If random partition, assign random subsets of data to each expert
+        if self.partition_type == 'random':
+            self._partition_random(x)
+            
+        # If clustering partition, assign fit a K_means to the train data and 
+        # assign a cluster to each expert
+        if self.partition_type == 'clustering':
+            self._partition_clustering(x)
+                
+               
+        # Partition training data points using balltree assignment method. 
+        if self.partition_type == 'balltree':
+            self._partition_balltree(x)
+            
+            
+        # check if there is any left out
+        ls_join = []
+        for i in range(self.M):
+            ls_join = ls_join + self.partition[i].tolist()
+        ls_all_idx = range(x.shape[0]) 
+        ls_not = [idx for idx in ls_all_idx if idx not in ls_join]
+        if len(ls_not) >= self.N:
+            self.partition.append(np.array(ls_not))
+        elif len(ls_not) > 0:
+            self.partition[-1] = np.hstack((self.partition[-1], np.array(ls_not)))  
+        
+        # update self.M, because the number of leaf might be fewer than 
+        # the original M
+        self.M = len(self.partition)
+        self.n_gp = self.M
+        
+        self._fit_model(x, y)
+        
+        
     def _partition_random(self, x: np.ndarray) -> None:
         """
         Partition training points using random method.
@@ -147,56 +199,7 @@ class GPPro:
         self.n_gp = self.M
         
         
-    def train(self, x: np.ndarray, y: np.ndarray) -> None:
-        """
-        Initiate the individual experts and fit their hyperparameters.
-
-        Args: 
-            x: dimension: n_train_points x dim_x : Training inputs.
-            y: dimension: n_train_points x 1 : Training labels.
-
-        """
-        
-        # Compute number of experts 
-        self.M = int(np.max([int(x.shape[0]) / self.points_per_experts, 1]))
-        
-        # Compute number of points experts 
-        self.N = int(x.shape[0] / self.M)
-        
-        print("M: ", self.M, ", N: ", self.N) # noqa: T201
-        
-        # If random partition, assign random subsets of data to each expert
-        if self.partition_type == 'random':
-            self._partition_random(x)
-            
-        # If clustering partition, assign fit a K_means to the train data and 
-        # assign a cluster to each expert
-        if self.partition_type == 'clustering':
-            self._partition_clustering(x)
-                
-               
-        # Partition training data points using balltree assignment method. 
-        if self.partition_type == 'balltree':
-            self._partition_balltree(x)
-            
-            
-        # check if there is any left out
-        ls_join = []
-        for i in range(self.M):
-            ls_join = ls_join + self.partition[i].tolist()
-        ls_all_idx = range(x.shape[0]) 
-        ls_not = [idx for idx in ls_all_idx if idx not in ls_join]
-        if len(ls_not) >= self.N:
-            self.partition.append(np.array(ls_not))
-        elif len(ls_not) > 0:
-            self.partition[-1] = np.hstack((self.partition[-1], np.array(ls_not)))  
-        
-        # update self.M, because the number of leaf might be fewer than 
-        # the original M
-        self.M = len(self.partition)
-        self.n_gp = self.M
-        
-        self._fit_model(x, y)
+    
         
             
     
@@ -244,7 +247,7 @@ class GPPro:
             output = self.ls_model(*self.ls_model.train_inputs)
             loss = -mll(output, self.ls_model.train_targets)
             loss.backward()
-            print(
+            print( # noqa: T201
                 f"Iter {i + 1}/{training_iterations} - Loss: {loss.item():.3f}"
             ) # noqa: T201
             optimizer.step()
