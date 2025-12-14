@@ -1,26 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov 30 17:22:57 2025
+Created on Sun Nov 30 17:22:57 2025.
 
-@author: localadmin
+@author: localadmin.
 """
 
 import torch
 import math
-#import pandas as pd
-#import numpy as np
-#from sklearn.model_selection import train_test_split
-#from sklearn.metrics import mean_absolute_error, mean_squared_error, log_loss, r2_score
-#from xgboost import XGBRegressor
-#from sklearn.ensemble import HistGradientBoostingRegressor #GradientBoostingRegressor
-#from datetime import datetime
-#from math import radians, sin, cos, sqrt, atan2
-#from utils import compute_stop_arrivals
-#import os
-#from data.loader import load_bus_stop_data, load_gps_data
-#from features.preprocessing import compute_stop_arrivals
-#from features.feature_engineering import add_temporal_features, get_target, get_features, normalise_data_minmaxscaler
 from evaluation.evaluation import compute_evaluation
 from models.gp_global import GPGlobal
 from models.gp_pro import GPPro
