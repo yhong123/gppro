@@ -13,11 +13,10 @@ from .gp_base import GPBase
 
 
 class GPGlobal():
-    """
-    A single global Gaussian process model using GPBase.
-    """
+    """ A single global Gaussian process model using GPBase. """
+    
     def __init__(self) -> None:
-        
+        """ Initialise a product-of-experts Gaussian process model. """
         self.likelihood = gpytorch.likelihoods.GaussianLikelihood()
         
         

@@ -29,12 +29,11 @@ class GPPro:
 
     def __init__(self, points_per_experts: int=200, 
                  partition_type: str='balltree') -> None:
-        """
-        Initialise a product-of-experts Gaussian process model.
-        """
+        """ Initialise a product-of-experts Gaussian process model. """
         self.partition_type = partition_type
         self.points_per_experts = points_per_experts
         self.weighting = 'diff_entr'
+        self.min_point_in_cluster = 3
 
     
     def _partition_random(self, x: np.ndarray) -> None:
@@ -74,7 +73,7 @@ class GPPro:
         for i in range(self.M):
             ls_data_idx = [j for j, lb in enumerate(label) if lb == i]
             num_data = len(ls_data_idx)
-            if (num_data > 3):
+            if (num_data > self.min_point_in_cluster):
                 self.partition.append( np.array(ls_data_idx) )
                 ls_num.append(len(self.partition[-1]))
                 num_cluster = num_cluster + 1
@@ -95,8 +94,8 @@ class GPPro:
 
         """
         self.partition = []
-        # For a specified leaf_size, a leaf node is guaranteed to satisfy
-        # leaf_size <= n_points <= 2 * leaf_size
+        # For a specified leaf_size, a leaf node is guaranteed to
+        # satisfy leaf_size <= n_points <= 2 * leaf_size
         leaf_size = self.N  
         tree = BallTree(x, leaf_size=leaf_size )
         (
@@ -112,7 +111,8 @@ class GPPro:
         num_from_leaf = 0
         num_from_parent = 0
         for node in node_data[::-1]:
-            if len(self.partition) >= self.M: break
+            if len(self.partition) >= self.M: 
+                break
             idx_start, idx_end, is_leaf, radius = node
             if (is_leaf):
                 ls_idx_rd = np.arange(idx_start, idx_start+self.N)
@@ -147,11 +147,10 @@ class GPPro:
         
         
     def train(self, x: np.ndarray, y: np.ndarray) -> None:
-        
-        """ 
-        Initiate the individual experts and fit their shared hyperparameters by
+        """
+        Initiate the individual experts and fit their hyperparameters by
         minimizing the sum of negative log marginal likelihoods.
-        
+
         Args: 
             x: dimension: n_train_points x dim_x : Training inputs.
             y: dimension: n_train_points x 1 : Training labels.
@@ -197,19 +196,29 @@ class GPPro:
         self.M = len(self.partition)
         self.n_gp = self.M
         
+        self._fit_model(x, y)
         
-        ls_size_ = [] 
-        for i in range(self.M):
-            ls_size_.append(len(self.partition[i]))
+            
+    
+    def _fit_model(self, x: np.ndarray, y: np.ndarray) -> None:
+        """
+        Fit the individual experts' hyperparameters by
+        minimizing the sum of negative log marginal likelihoods.
+
+        Args: 
+            x: dimension: n_train_points x dim_x : Training inputs.
+            y: dimension: n_train_points x 1 : Training labels.
+                
+        """
         
-        train_X = x
-        train_fX = y
+        train_x = x
+        train_fx = y
         likelihoods = []
         models = []
         for i in range(self.M):
-            sub_train_X = torch.tensor( train_X[self.partition[i]] ).contiguous()
+            sub_train_X = torch.tensor( train_x[self.partition[i]] ).contiguous()
             sub_train_fX = torch.tensor( 
-                        np.ravel(train_fX[self.partition[i]]) ).contiguous()
+                        np.ravel(train_fx[self.partition[i]]) ).contiguous()
             
             likelihood_ = gpytorch.likelihoods.GaussianLikelihood()
             
@@ -238,8 +247,7 @@ class GPPro:
             print('Iter %d/%d - Loss: %.3f' % 
                   (i + 1, training_iterations, loss.item()))
             optimizer.step()
-            
-        
+         
         # Set into eval mode
         self.ls_model.eval()
         self.ls_likelihood.eval()
@@ -256,8 +264,7 @@ class GPPro:
             prior_mean = model.mean_module.constant
             self.ls_prior_mean.append( prior_mean.detach().numpy().ravel() )
             
-    
-    
+        
     def predict(self, xt_s: np.ndarray) -> np.ndarray:
         
         """
@@ -295,7 +302,7 @@ class GPPro:
         # (a list with the means and variances of each expert - 
         # len(list)=num_experts )
         
-        X_cand_torch = torch.tensor(xt_s).contiguous() 
+        x_cand_torch = torch.tensor(xt_s).contiguous() 
         
         # Set into eval mode
         self.ls_model.eval()
@@ -305,7 +312,7 @@ class GPPro:
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
             # This contains predictions for both outcomes as a list
             predictions = self.ls_likelihood(
-                            *[m(X_cand_torch) for m in self.ls_model.models])
+                            *[m(x_cand_torch) for m in self.ls_model.models])
         
         ls_gp_y_cand_pred_mean = []
         ls_gp_y_cand_pred_var = []
