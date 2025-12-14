@@ -148,13 +148,12 @@ class GPPro:
         
     def train(self, x: np.ndarray, y: np.ndarray) -> None:
         """
-        Initiate the individual experts and fit their hyperparameters by
-        minimizing the sum of negative log marginal likelihoods.
+        Initiate the individual experts and fit their hyperparameters.
 
         Args: 
             x: dimension: n_train_points x dim_x : Training inputs.
             y: dimension: n_train_points x 1 : Training labels.
-                
+
         """
         
         # Compute number of experts 
@@ -202,13 +201,15 @@ class GPPro:
     
     def _fit_model(self, x: np.ndarray, y: np.ndarray) -> None:
         """
-        Fit the individual experts' hyperparameters by
-        minimizing the sum of negative log marginal likelihoods.
+        Fit the individual experts' hyperparameters.
+
+        The hyperparameters are fit by minimizing the sum of negative log
+        marginal likelihoods.
 
         Args: 
             x: dimension: n_train_points x dim_x : Training inputs.
             y: dimension: n_train_points x 1 : Training labels.
-                
+
         """
         
         train_x = x
@@ -216,13 +217,13 @@ class GPPro:
         likelihoods = []
         models = []
         for i in range(self.M):
-            sub_train_X = torch.tensor( train_x[self.partition[i]] ).contiguous()
-            sub_train_fX = torch.tensor( 
+            sub_train_x = torch.tensor( train_x[self.partition[i]] ).contiguous()
+            sub_train_fx = torch.tensor( 
                         np.ravel(train_fx[self.partition[i]]) ).contiguous()
             
             likelihood_ = gpytorch.likelihoods.GaussianLikelihood()
             
-            model_ = GPBase(sub_train_X, sub_train_fX, likelihood_)
+            model_ = GPBase(sub_train_x, sub_train_fx, likelihood_)
             models.append(model_)
             likelihoods.append(model_.likelihood)
             
@@ -244,8 +245,9 @@ class GPPro:
             output = self.ls_model(*self.ls_model.train_inputs)
             loss = -mll(output, self.ls_model.train_targets)
             loss.backward()
-            print('Iter %d/%d - Loss: %.3f' % 
-                  (i + 1, training_iterations, loss.item()))
+            print(
+                f"Iter {i + 1}/{training_iterations} - Loss: {loss.item():.3f}"
+            )
             optimizer.step()
          
         # Set into eval mode
@@ -269,14 +271,14 @@ class GPPro:
         
         """
         Predicting aggregated mean and variance for all test points.
-        
+
         Args: 
             xt_s: dimension: n_test_points x dim_x : Test points.
-                
+
         Returns: 
             mu_s: dimension: n_test_points x 1 : aggregated predictive mean.
             var_s: dimension: n_test_points x 1 : aggregated predictive variance
-                
+
         """
         mu_s, var_s = self.gather_predictions(xt_s)
         return self.prediction_aggregation(xt_s, mu_s, var_s)
@@ -287,16 +289,16 @@ class GPPro:
         """
         Gathering the predictive means and variances of all local experts at
         all test points.
-        
+
         Args: 
             xt_s: dimension: n_test_points x dim_x : Test points.
-                
+
         Returns: 
             mu_s: dimension: n_expert x n_test_points : 
                   predictive mean of each expert at each test point.
             var_s: dimension: n_expert x n_test_points : 
                    predictive variance of each expert at each test point.
-        
+
         """
         # Gather the predictive means and variances of each experts 
         # (a list with the means and variances of each expert - 
@@ -336,7 +338,7 @@ class GPPro:
                                var_s: np.ndarray, power: int=8) -> np.ndarray: 
         """ 
         Aggregation of predictive means and variances of local experts.
-        
+
         Args: 
             xt_s: dimension: n_test_points x dim_x : Test points.
             mu_s: dimension: n_expert x n_test_points : 
@@ -344,10 +346,11 @@ class GPPro:
             var_s: dimension: n_expert x n_test_points : 
                    predictive variance of each expert at each test point.
             power: dimension : 1x1 : Softmax scaling.
-                
+
         Returns: 
             mu: dimension: n_test_points x 1 : aggregated predictive mean.
             var: dimension: n_test_points x 1 : aggregated predictive variance.
+
         """
         
         ls_prior_mean = self.ls_prior_mean
@@ -364,9 +367,8 @@ class GPPro:
         
         # Compute weight matrix - dim: n_experts x n_test_points
         weight_matrix = self.compute_weights(mu_s, var_s, power, self.weighting, 
-                                              prior_mean=ls_prior_mean, 
                                               prior_var=ls_prior_var, 
-                                              ratio_cc=ratio_matrix)
+                                              )
         
         weight_matrix = self.normalize_weights(weight_matrix)
         
@@ -390,20 +392,18 @@ class GPPro:
     def compute_calibration(self, m_var: np.ndarray, ls_noise: list, 
                             ls_prior_var: list) -> np.ndarray:
         """ 
-        Compute reduced variances at each local GP by applying information-based 
-        calibration. 
-        
+        Compute calibration ratio at each local GP. 
+
         Args: 
             m_var: dimension: n_expert x n_test_points : 
                    predictive variance of each expert at each test point.
             ls_noise: n_expert x 1 : noise hyperparameter of each expert.
             ls_prior_var: n_expert x 1 : prior variance of each expert.
-                
+
         Returns: 
             m_ratio: dimension: n_expert x n_test_points : 
                      calibration ratio of ith expert at jth test point.
-        
-        
+
         """
         
         ls_noise_numpy = np.array(ls_noise)
@@ -429,46 +429,53 @@ class GPPro:
         return m_ratio
     
     
-    def normalise_ig_ig(self, from_ig2, from_ig1, to_ig1):
-        term1 =  np.exp( from_ig2  ) - 1
-        term2 =  np.exp( from_ig1  ) - 1
+    def normalise_ig_ig(self, from_ig1: np.ndarray, from_ig2: np.ndarray, to_ig1: np.ndarray) -> np.ndarray:
+        """ 
+        Normalise information gain. 
+
+        Args: 
+            from_ig1: Numerator.
+            from_ig2: Denominator.
+            to_ig1: Target.
+
+        Returns: 
+            to_ig2: Normalised value.
+
+        """
+        term1 =  np.exp( from_ig1  ) - 1
+        term2 =  np.exp( from_ig2  ) - 1
         term3 =  np.exp( to_ig1  ) - 1
         to_ig2 = (term1 / term2) * term3
         to_ig2 = np.where(to_ig2 > 0, to_ig2, 0)
         to_ig2 = np.log(1 + to_ig2)
         
-        #to_ig2 = (from_ig2 / from_ig1) * to_ig1
         return to_ig2
 
 
-    def compute_weights(self, mu_s, var_s, power, weighting, prior_mean=None, prior_var=None, ratio_cc=None, softmax=False):
-        
-        """ Compute unnormalized weight matrix
-        Inputs : 
-                -- mu_s, dimension: n_expert x n_test_points : predictive mean of each expert at each test point
-                -- var_s, dimension: n_expert x n_test_points : predictive variance of each expert at each test point
-                -- power, dimension : 1x1 : Softmax scaling
-                -- weighting, str : weighting method (variance/wass/uniform/diff_entr/no_weights)
-                -- prior_var, dimension: n_expert xx1 : shared prior variance of expert GPs
-                -- soft_max_wass : logical : whether to use softmax scaling or fraction scaling
-                
-        Output : 
-                -- weight_matrix, dimension: n_expert x n_test_points : unnormalized weight of ith expert at jth test point
-        """
-        #print("prior_var: ", prior_var)
-        #prior_mean_numpy = np.array(prior_mean)
-        prior_var_numpy = np.array(prior_var)
-        #prior_var_max = np.max(prior_var_numpy)
+    def compute_weights(self, mu_s: np.ndarray, var_s: np.ndarray, 
+                        power: np.ndarray, weighting: np.ndarray, 
+                        prior_var: np.ndarray=None) -> np.ndarray:
+        """ 
+        Compute unnormalized weight matrix.
 
+        Args:
+            mu_s: dimension: n_expert x n_test_points : 
+                  predictive mean of each expert at each test point.
+            var_s: dimension: n_expert x n_test_points : 
+                   predictive variance of each expert at each test point.
+            power: dimension : 1x1 : Softmax scaling.
+            weighting: str : weighting method (variance/uniform/diff_entr/no_weights).
+            prior_var: dimension: n_expert xx1 : prior variance of expert GPs.
+
+        Returns: 
+            weight_matrix: dimension: n_expert x n_test_points : 
+                           unnormalized weight of ith expert at jth test point.
+
+        """
+        prior_var_numpy = np.array(prior_var)
         
         if weighting == 'variance':
             weight_matrix = np.exp(-power * var_s) 
-            
-        if weighting == 'variance_t1':
-            weight_matrix = np.exp(-1 * var_s) 
-            
-        if weighting == 'variance_cc':
-            weight_matrix = np.exp(-ratio_cc * var_s) 
         
         if weighting == 'variance_diff':
             weight_matrix = ( prior_var_numpy ) - ( var_s )
@@ -477,7 +484,7 @@ class GPPro:
             weight_matrix = ( np.sqrt(prior_var_numpy) ) - ( np.sqrt(var_s) )
         
         if weighting == 'uniform':
-            weight_matrix = np.ones(mu_s.shape, dtype = np.float64) / mu_s.shape[0] #tf.ones(mu_s.shape, dtype = tf.float64) / mu_s.shape[0]
+            weight_matrix = np.ones(mu_s.shape, dtype = np.float64) / mu_s.shape[0] 
 
         if weighting == 'diff_entr':
             weight_matrix = 0.5 * (np.log(prior_var_numpy) - np.log(var_s)) 
@@ -491,17 +498,21 @@ class GPPro:
 
 
     
-    def normalize_weights(self, weight_matrix):
-        """ Compute unnormalized weight matrix
-        Inputs : 
-                -- weight_matrix, dimension: n_expert x n_test_points : unnormalized weight of ith expert at jth test point
-                
-                
-        Output : 
-                -- weight_matrix, dimension: n_expert x n_test_points : normalized weight of ith expert at jth test point
+    def normalize_weights(self, weight_matrix: np.ndarray) -> np.ndarray:
+        """ 
+        Compute unnormalized weight matrix.
+        
+        Args: 
+            weight_matrix: dimension: n_expert x n_test_points : 
+                           unnormalized weight of ith expert at jth test point.
+       
+        Returns: 
+            weight_matrix: dimension: n_expert x n_test_points : 
+                           normalized weight of ith expert at jth test point.
+
         """
         
-        sum_weights = np.sum(weight_matrix, axis=0) #tf.reduce_sum(weight_matrix, axis=0)
+        sum_weights = np.sum(weight_matrix, axis=0) 
         weight_matrix = weight_matrix / sum_weights
         
         return weight_matrix
