@@ -272,10 +272,10 @@ class GPPro:
         """
         Predicting aggregated mean and variance for all test points.
 
-        Args: 
+        Args:
             xt_s: dimension: n_test_points x dim_x : Test points.
 
-        Returns: 
+        Returns:
             mu_s: dimension: n_test_points x 1 : aggregated predictive mean.
             var_s: dimension: n_test_points x 1 : aggregated predictive variance
 
@@ -289,10 +289,10 @@ class GPPro:
         """
         Gathering the predictive means and variances of all local experts.
 
-        Args: 
+        Args:
             xt_s: dimension: n_test_points x dim_x : Test points.
 
-        Returns: 
+        Returns:
             mu_s: dimension: n_expert x n_test_points :
                   predictive mean of each expert at each test point.
             var_s: dimension: n_expert x n_test_points :
@@ -336,16 +336,16 @@ class GPPro:
     def prediction_aggregation(self, mu_s: np.ndarray, 
                                var_s: np.ndarray, power: int=8) -> np.ndarray:
         """
-        Aggregation of predictive means and variances of local experts.
+        Aggregate predictive means and variances of local experts.
 
-        Args: 
+        Args:
             mu_s: dimension: n_expert x n_test_points :
                   predictive mean of each expert at each test point.
             var_s: dimension: n_expert x n_test_points :
                    predictive variance of each expert at each test point.
             power: dimension : 1x1 : Softmax scaling.
 
-        Returns: 
+        Returns:
             mu: dimension: n_test_points x 1 : aggregated predictive mean.
             var: dimension: n_test_points x 1 : aggregated predictive variance.
 
@@ -388,16 +388,16 @@ class GPPro:
     
     def compute_calibration(self, m_var: np.ndarray, ls_noise: list, 
                             ls_prior_var: list) -> np.ndarray:
-        """ 
+        """
         Compute calibration ratio at each local GP.
 
-        Args: 
+        Args:
             m_var: dimension: n_expert x n_test_points :
                    predictive variance of each expert at each test point.
             ls_noise: n_expert x 1 : noise hyperparameter of each expert.
             ls_prior_var: n_expert x 1 : prior variance of each expert.
 
-        Returns: 
+        Returns:
             Calibration ratio of ith expert at jth test point.
 
         """
@@ -429,15 +429,15 @@ class GPPro:
     
     def normalise_ig_ig(self, from_ig1: np.ndarray, from_ig2: np.ndarray, 
                         to_ig1: np.ndarray) -> np.ndarray:
-        """ 
+        """
         Normalise information gain.
 
-        Args: 
+        Args:
             from_ig1: Numerator.
             from_ig2: Denominator.
             to_ig1: Target.
 
-        Returns: 
+        Returns:
             Normalised value.
 
         """
@@ -453,7 +453,7 @@ class GPPro:
     def compute_weights(self, mu_s: np.ndarray, var_s: np.ndarray, 
                         power: np.ndarray, weighting: np.ndarray, 
                         prior_var: np.ndarray=None) -> np.ndarray:
-        """ 
+        """
         Compute unnormalized weight matrix.
 
         Args:
@@ -465,7 +465,7 @@ class GPPro:
             weighting: str : weighting method (variance/uniform/diff_entr/no_weights).
             prior_var: dimension: n_expert xx1 : prior variance of expert GPs.
 
-        Returns: 
+        Returns:
             weight_matrix: dimension: n_expert x n_test_points :
                            unnormalized weight of ith expert at jth test point.
 
@@ -497,14 +497,14 @@ class GPPro:
 
     
     def normalize_weights(self, weight_matrix: np.ndarray) -> np.ndarray:
-        """ 
+        """
         Compute unnormalized weight matrix.
-        
-        Args: 
+
+        Args:
             weight_matrix: dimension: n_expert x n_test_points : 
                            unnormalized weight of ith expert at jth test point.
-       
-        Returns: 
+
+        Returns:
             Normalised weight of ith expert at jth test point.
 
         """
