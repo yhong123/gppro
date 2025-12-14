@@ -21,15 +21,10 @@ class GPBase(gpytorch.models.ExactGP):
         likelihood: The Gaussian likelihood that defines the observational
                     distribution.
 
-    Returns:
-        Calling this model will return the posterior of the latent Gaussian
-        process when conditioned on the training data. The output will be a
-        obj gpytorch.distributions.MultivariateNormal.
-
     """
 
     def __init__(self, train_x: Tensor, train_y: Tensor, 
-                 likelihood: GaussianLikelihood) -> Tensor:
+                 likelihood: GaussianLikelihood) -> None:
         """
         Initialise a Gaussian process model.
 
@@ -65,6 +60,9 @@ class GPBase(gpytorch.models.ExactGP):
         Returns:
             The posterior of the latent Gaussian process when conditioned
             on the training data.
+            Calling this method will return the posterior of the latent Gaussian
+            process when conditioned on the training data. The output will be a
+            obj gpytorch.distributions.MultivariateNormal.
 
         """
         mean = self.mean_module(x)
