@@ -9,13 +9,6 @@ Created on Fri Mar  3 17:14:25 2023.
 import numpy as np
 import torch
 import gpytorch
-#from gpytorch.constraints.constraints import Interval
-#from gpytorch.distributions import MultivariateNormal
-#from gpytorch.kernels import MaternKernel, ScaleKernel
-#from gpytorch.likelihoods import GaussianLikelihood
-#from gpytorch.means import ConstantMean, ZeroMean
-#from gpytorch.mlls import ExactMarginalLogLikelihood
-#from gpytorch.models import ExactGP
 import scipy
 from sklearn.neighbors import BallTree
 from gpytorch.mlls.sum_marginal_log_likelihood import SumMarginalLogLikelihood
@@ -38,7 +31,6 @@ class GPPro:
                  partition_type: str='balltree') -> None:
         """
         Initialise a product-of-experts Gaussian process model.
-        
         """
         self.partition_type = partition_type
         self.points_per_experts = points_per_experts
@@ -56,7 +48,7 @@ class GPPro:
         self.partition = []
         ls_all_idx = range(x.shape[0])
         len_all = len(ls_all_idx)
-        ls_idx_rd = np.random.choice( np.array(ls_all_idx), len_all, 
+        ls_idx_rd = np.random.Generator( np.array(ls_all_idx), len_all, 
                                      replace=False)
         for i in range(self.M):
             start_idx = i * self.N
@@ -65,113 +57,135 @@ class GPPro:
                 self.partition.append(np.array(ls_idx_rd[start_idx:end_idx]))
                 
     
-    def train(self, X: np.ndarray, Y: np.ndarray) -> None:
+    def _partition_clustering(self, x: np.ndarray) -> None:
+        """
+        Partition training points using clustering method.
+
+        Args:
+            x: The input training points.
+
+        """
+        ls_num = []
+        self.partition = []
+        centroid, label = scipy.cluster.vq.kmeans2(x, self.M)
+        # How many points are in each cluster? counts = np.bincount(label)
+        
+        num_cluster = 0
+        for i in range(self.M):
+            ls_data_idx = [j for j, lb in enumerate(label) if lb == i]
+            num_data = len(ls_data_idx)
+            if (num_data > 3):
+                self.partition.append( np.array(ls_data_idx) )
+                ls_num.append(len(self.partition[-1]))
+                num_cluster = num_cluster + 1
+            
+        if num_cluster == 0:
+            self.partition = []
+            self._partition_random(x)
+        elif num_cluster < self.M:
+            self.M = num_cluster
+            
+        
+    def _partition_balltree(self, x: np.ndarray) -> None:
+        """
+        Partition training points using balltree method.
+
+        Args:
+            x: The input training points.
+
+        """
+        self.partition = []
+        # For a specified leaf_size, a leaf node is guaranteed to satisfy
+        # leaf_size <= n_points <= 2 * leaf_size
+        leaf_size = self.N  
+        tree = BallTree(x, leaf_size=leaf_size )
+        (
+            _,
+            idx_array,
+            node_data,
+            node_bounds,
+        ) = tree.get_arrays()
+        
+        ls_join = []
+        
+        # start from leaf
+        num_from_leaf = 0
+        num_from_parent = 0
+        for node in node_data[::-1]:
+            if len(self.partition) >= self.M: break
+            idx_start, idx_end, is_leaf, radius = node
+            if (is_leaf):
+                ls_idx_rd = np.arange(idx_start, idx_start+self.N)
+                ls_join = ls_join + ls_idx_rd.tolist()
+                ls_idx = idx_array[ls_idx_rd] 
+                self.partition.append(np.array(ls_idx))
+                num_from_leaf = num_from_leaf + 1
+            
+        num_from_parent = 0
+        idx_start, idx_end, is_leaf, radius = node_data[0]  # parent node
+        ls_all_idx = np.arange(idx_start, idx_end).tolist()
+        ls_not = [idx for idx in ls_all_idx if idx not in ls_join]
+        len_ls_not = len(ls_not)
+        i = 0
+        while len(self.partition) < self.M:
+            start_idx = i * self.N
+            end_idx = start_idx + self.N
+            if end_idx <= len_ls_not:
+                ls_idx_rd_ = np.array(ls_not[start_idx:end_idx])
+                ls_join = ls_join + ls_idx_rd_.tolist()
+                ls_idx = idx_array[ls_idx_rd_] 
+                self.partition.append(np.array(ls_idx))
+                num_from_parent = num_from_parent + 1
+            else:
+                break
+            i = i + 1
+        
+        # update self.M, because the number of leaf might be fewer than 
+        # the original M
+        self.M = len(self.partition)
+        self.n_gp = self.M
+        
+        
+    def train(self, x: np.ndarray, y: np.ndarray) -> None:
         
         """ 
         Initiate the individual experts and fit their shared hyperparameters by
         minimizing the sum of negative log marginal likelihoods.
         
         Args: 
-            X: dimension: n_train_points x dim_x : Training inputs.
-            Y: dimension: n_train_points x 1 : Training labels.
+            x: dimension: n_train_points x dim_x : Training inputs.
+            y: dimension: n_train_points x 1 : Training labels.
                 
         """
         
         # Compute number of experts 
-        self.M = int(np.max([int(X.shape[0]) / self.points_per_experts, 1]))
+        self.M = int(np.max([int(x.shape[0]) / self.points_per_experts, 1]))
         
         # Compute number of points experts 
-        self.N = int(X.shape[0] / self.M)
+        self.N = int(x.shape[0] / self.M)
         
         print("M: ", self.M, ", N: ", self.N)
         
         # If random partition, assign random subsets of data to each expert
         if self.partition_type == 'random':
-            self._partition_random(X)
+            self._partition_random(x)
             
         # If clustering partition, assign fit a K_means to the train data and 
         # assign a cluster to each expert
         if self.partition_type == 'clustering':
-            ls_num = []
-            self.partition = []
-            centroid, label = scipy.cluster.vq.kmeans2(X, self.M)
-            # How many points are in each cluster? counts = np.bincount(label)
-            
-            num_cluster = 0
-            for i in range(self.M):
-                ls_data_idx = [j for j, lb in enumerate(label) if lb == i]
-                num_data = len(ls_data_idx)
-                if (num_data > 3):
-                    self.partition.append( np.array(ls_data_idx) )
-                    ls_num.append(len(self.partition[-1]))
-                    num_cluster = num_cluster + 1
-                
-            if num_cluster == 0:
-                self.partition = []
-                self._partition_random(X)
-            elif num_cluster < self.M:
-                self.M = num_cluster
+            self._partition_clustering(x)
                 
                
         # Partition training data points using balltree assignment method. 
         if self.partition_type == 'balltree':
+            self._partition_balltree(x)
             
-            self.partition = []
-            # For a specified leaf_size, a leaf node is guaranteed to satisfy
-            # leaf_size <= n_points <= 2 * leaf_size
-            leaf_size = self.N  
-            tree = BallTree(X, leaf_size=leaf_size )
-            (
-                _,
-                idx_array,
-                node_data,
-                node_bounds,
-            ) = tree.get_arrays()
-            
-            ls_join = []
-            
-            # start from leaf
-            num_from_leaf = 0
-            num_from_parent = 0
-            for node in node_data[::-1]:
-                if len(self.partition) >= self.M: break
-                idx_start, idx_end, is_leaf, radius = node
-                if (is_leaf):
-                    ls_idx_rd = np.arange(idx_start, idx_start+self.N)
-                    ls_join = ls_join + ls_idx_rd.tolist()
-                    ls_idx = idx_array[ls_idx_rd] 
-                    self.partition.append(np.array(ls_idx))
-                    num_from_leaf = num_from_leaf + 1
-                
-            num_from_parent = 0
-            idx_start, idx_end, is_leaf, radius = node_data[0]  # parent node
-            ls_all_idx = np.arange(idx_start, idx_end).tolist()
-            ls_not = [idx for idx in ls_all_idx if idx not in ls_join]
-            len_ls_not = len(ls_not)
-            i = 0
-            while len(self.partition) < self.M:
-                start_idx = i * self.N
-                end_idx = start_idx + self.N
-                if end_idx <= len_ls_not:
-                    ls_idx_rd_ = np.array(ls_not[start_idx:end_idx])
-                    ls_join = ls_join + ls_idx_rd_.tolist()
-                    ls_idx = idx_array[ls_idx_rd_] 
-                    self.partition.append(np.array(ls_idx))
-                    num_from_parent = num_from_parent + 1
-                else:
-                    break
-                i = i + 1
-            
-            # update self.M, because the number of leaf might be fewer than 
-            # the original M
-            self.M = len(self.partition)
-            self.n_gp = self.M
             
         # check if there is any left out
         ls_join = []
         for i in range(self.M):
             ls_join = ls_join + self.partition[i].tolist()
-        ls_all_idx = range(X.shape[0]) 
+        ls_all_idx = range(x.shape[0]) 
         ls_not = [idx for idx in ls_all_idx if idx not in ls_join]
         if len(ls_not) >= self.N:
             self.partition.append(np.array(ls_not))
@@ -188,8 +202,8 @@ class GPPro:
         for i in range(self.M):
             ls_size_.append(len(self.partition[i]))
         
-        train_X = X
-        train_fX = Y
+        train_X = x
+        train_fX = y
         likelihoods = []
         models = []
         for i in range(self.M):
