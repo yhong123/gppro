@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Created on Fri Mar  3 17:14:25 2023.
+
+@author: yhong.
+"""
 
 import numpy as np
 import torch
@@ -29,7 +34,7 @@ class GPPro:
 
     """
 
-    def __init__(self, points_per_experts=200, partition_type='balltree'):
+    def __init__(self, points_per_experts: int=200, partition_type: str='balltree') -> None:
         """
         Initialise a product-of-experts Gaussian process model.
         
@@ -39,11 +44,19 @@ class GPPro:
         self.weighting = 'diff_entr'
 
     
-    def _partition_random(self, X):
+    def _partition_random(self, x: np.ndarray) -> None:
+        """
+        Partition training points using random method.
+
+        Args:
+            x: The input training points.
+
+        """
         self.partition = []
-        ls_all_idx = range(X.shape[0])
+        ls_all_idx = range(x.shape[0])
         len_all = len(ls_all_idx)
-        ls_idx_rd = np.random.choice( np.array(ls_all_idx), len_all, replace=False)
+        ls_idx_rd = np.random.choice( np.array(ls_all_idx), len_all, 
+                                     replace=False)
         for i in range(self.M):
             start_idx = i * self.N
             end_idx = start_idx + self.N
@@ -53,8 +66,9 @@ class GPPro:
     
     def train(self, X: np.ndarray, Y: np.ndarray):
         
-        """ Initiate the individual experts and fit their shared hyperparameters by 
-                            minimizing the sum of negative log marginal likelihoods
+        """ 
+        Initiate the individual experts and fit their shared hyperparameters by
+        minimizing the sum of negative log marginal likelihoods
         
         Inputs : 
                 -- X, dimension: n_train_points x dim_x : Training inputs
