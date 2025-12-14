@@ -16,7 +16,7 @@
 [license-badge]:            https://img.shields.io/badge/License-MIT-yellow.svg
 <!-- prettier-ignore-end -->
 
-A python package implementing product-of-experts Gaussian process model with information-based calibration.
+A python package implementing a product-of-experts Gaussian process model, which consists of a collection of local GP models that work collaboratively, and incorporates an information-based method to calibrate the overestimated posterior variances.
 
 <!-- This project is developed in collaboration with the  -->
 <!-- [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University College London.  -->
