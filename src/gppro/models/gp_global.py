@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Dec  7 18:05:02 2025.
-
-@author: localadmin.
-"""
 
 import torch
 from torch import Tensor
@@ -72,7 +67,7 @@ class GPGlobal():
         Predict the posterior target values for the input data.
 
         Args:
-            x: The input data.
+            test_x: The input data.
 
         Returns:
             The posterior mean and variance of the targets.

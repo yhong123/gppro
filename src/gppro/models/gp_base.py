@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 13 14:50:45 2025.
-
-@author: localadmin.
-"""
 
 from torch import Tensor
 import gpytorch
@@ -29,7 +24,7 @@ class GPBase(gpytorch.models.ExactGP):
     """
 
     def __init__(self, train_x: Tensor, train_y: Tensor, 
-                 likelihood: GaussianLikelihood) -> None:
+                 likelihood: GaussianLikelihood) -> Tensor:
         """
         Initialise a Gaussian process model.
 

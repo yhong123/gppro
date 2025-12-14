@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 11 14:20:04 2025
-
-@author: localadmin
-"""
 
 import numpy as np
 import torch
@@ -23,10 +18,22 @@ from .gp_base import GPBase
 
 
 class GPPro:
+    """
+    A product-of-experts Gaussian process model using GPBase.
 
-    def __init__(self, points_per_experts=200, partition_type='balltree2', is_test=False, seed=0):
+    Args:
+        points_per_experts: Maximum number of training points allocated to each
+                            expert.
+        partition_type: Method to partition the training points:
+                        random / clustering / balltree.
 
+    """
 
+    def __init__(self, points_per_experts=200, partition_type='balltree'):
+        """
+        Initialise a product-of-experts Gaussian process model.
+        
+        """
         self.partition_type = partition_type
         self.points_per_experts = points_per_experts
         self.weighting = 'diff_entr'
@@ -100,17 +107,12 @@ class GPPro:
             
             print("clustering: ls_num: ", ls_num)
             
-        if self.partition_type == 'all':
-            ls_all_idx = [i for i in range(X.shape[0])]
-            self.partition = []
-            for m in range(self.M):
-                self.partition.append(np.array(ls_all_idx))
-                
+        
                 
         """ Partition training data points using balltree assignment method. """
         
         
-        if self.partition_type == 'balltree2':
+        if self.partition_type == 'balltree':
             
             self.partition = []
             # For a specified leaf_size, a leaf node is guaranteed to satisfy leaf_size <= n_points <= 2 * leaf_size
