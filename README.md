@@ -18,6 +18,8 @@
 
 A python package implementing a product-of-experts Gaussian process model, which consists of a collection of local GP models that work collaboratively, and incorporates an information-based method to calibrate the overestimated posterior variances.
 
+See paper [Information-based Calibration of Uncertainty Quantification in Product of Gaussian Process Models](https://github.com/yhong123/doc/main/paper_1.pdf).
+
 <!-- This project is developed in collaboration with the  -->
 <!-- [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University College London.  -->
 
@@ -34,13 +36,6 @@ A python package implementing a product-of-experts Gaussian process model, which
 <!-- Centre for Advanced Research Computing, University College London  -->
 <!-- ([arc.collaborations@ucl.ac.uk](mailto:arc.collaborations@ucl.ac.uk))  -->
 
-## Built With
-
-<!-- TODO: can cookiecutter make a list of frameworks? -->
-
-- [Framework 1](https://something.com)
-- [Framework 2](https://something.com)
-- [Framework 3](https://something.com)
 
 ## Getting Started
 
@@ -48,7 +43,7 @@ A python package implementing a product-of-experts Gaussian process model, which
 
 <!-- Any tools or versions of languages needed to run code. For example specific Python or Node versions. Minimum hardware requirements also go here. -->
 
-`gppro` requires Python 3.11&ndash;3.13.
+`gppro` requires Python 3.9&ndash;3.12.
 
 ### Installation
 
@@ -76,50 +71,3 @@ and then install in editable mode by running
 pip install -e .
 ```
 
-### Running Locally
-
-How to run the application on your local system.
-
-### Running Tests
-
-<!-- How to run tests on your local system. -->
-
-Tests can be run across all compatible Python versions in isolated environments
-using [`tox`](https://tox.wiki/en/latest/) by running
-
-```sh
-tox
-```
-
-To run tests manually in a Python environment with `pytest` installed run
-
-```sh
-pytest tests
-```
-
-again from the root of the repository.
-
-### Building Documentation
-
-The MkDocs HTML documentation can be built locally by running
-
-```sh
-tox -e docs
-```
-
-from the root of the repository. The built documentation will be written to
-`site`.
-
-Alternatively to build and preview the documentation locally, in a Python
-environment with the optional `docs` dependencies installed, run
-
-```sh
-mkdocs serve
-```
-
-## Roadmap
-
-- [x] Initial Research
-- [ ] Minimum viable product <-- You are Here
-- [ ] Alpha Release
-- [ ] Feature-Complete Release
