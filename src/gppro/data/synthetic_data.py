@@ -63,9 +63,12 @@ def generate_synthetic_data_3() -> Tensor:
     test_x2 = torch.linspace(0, 1, 501).unsqueeze(-1)
     
     # Combined sets of data
-    train_x12 = torch.cat((train_x1.unsqueeze(0), train_x2.unsqueeze(0)), dim=0).contiguous()
-    train_y12 = torch.cat((train_y1.unsqueeze(0), train_y2.unsqueeze(0)), dim=0).contiguous()
-    test_x12 = torch.cat((test_x1.unsqueeze(0), test_x2.unsqueeze(0)), dim=0).contiguous()
+    train_x12 = torch.cat((train_x1.unsqueeze(0), 
+                           train_x2.unsqueeze(0)), dim=0).contiguous()
+    train_y12 = torch.cat((train_y1.unsqueeze(0), 
+                           train_y2.unsqueeze(0)), dim=0).contiguous()
+    test_x12 = torch.cat((test_x1.unsqueeze(0), 
+                          test_x2.unsqueeze(0)), dim=0).contiguous()
     
     return train_x12, train_y12, test_x12
 

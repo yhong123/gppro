@@ -8,6 +8,7 @@ Created on Fri Mar  3 17:14:25 2023.
 
 import numpy as np
 import torch
+from torch import Tensor
 import gpytorch
 import scipy
 from sklearn.neighbors import BallTree
@@ -199,7 +200,7 @@ class GPPro:
         
             
     
-    def _fit_model(self, x: np.ndarray, y: np.ndarray) -> None:
+    def _fit_model(self, x: Tensor, y: Tensor) -> None:
         """
         Fit the individual experts' hyperparameters.
 
@@ -217,10 +218,11 @@ class GPPro:
         likelihoods = []
         models = []
         for i in range(self.M):
-            sub_train_x = torch.tensor( train_x[self.partition[i]] ).contiguous()
-            sub_train_fx = torch.tensor( 
-                        np.ravel(train_fx[self.partition[i]]) ).contiguous()
-            
+            #sub_train_x = torch.tensor( train_x[self.partition[i]] ).contiguous()
+            #sub_train_fx = torch.tensor( 
+            #            np.ravel(train_fx[self.partition[i]]) ).contiguous()
+            sub_train_x = train_x[self.partition[i]] 
+            sub_train_fx = train_fx[self.partition[i]]
             likelihood_ = gpytorch.likelihoods.GaussianLikelihood()
             
             model_ = GPBase(sub_train_x, sub_train_fx, likelihood_)
@@ -267,7 +269,7 @@ class GPPro:
             self.ls_prior_mean.append( prior_mean.detach().numpy().ravel() )
             
         
-    def predict(self, xt_s: np.ndarray) -> np.ndarray:
+    def predict(self, xt_s: Tensor) -> np.ndarray:
         
         """
         Predicting aggregated mean and variance for all test points.
@@ -285,7 +287,7 @@ class GPPro:
 
     
     
-    def gather_predictions(self, xt_s: np.ndarray) -> np.ndarray:
+    def gather_predictions(self, xt_s: Tensor) -> np.ndarray:
         """
         Gathering the predictive means and variances of all local experts.
 
@@ -303,7 +305,7 @@ class GPPro:
         # (a list with the means and variances of each expert - 
         # len(list)=num_experts )
         
-        x_cand_torch = torch.tensor(xt_s).contiguous() 
+        x_cand_torch = xt_s #torch.tensor(xt_s).contiguous() 
         
         # Set into eval mode
         self.ls_model.eval()
@@ -320,8 +322,8 @@ class GPPro:
         for prediction in predictions:
             mean = prediction.mean
             var = prediction.variance #+ gp_noise
-            ls_gp_y_cand_pred_mean.append(mean.numpy())
-            ls_gp_y_cand_pred_var.append(var.numpy())
+            ls_gp_y_cand_pred_mean.append(mean.detach().numpy())
+            ls_gp_y_cand_pred_var.append(var.detach().numpy())
         
         #Stacking so that mu_s and var_s are tf tensors of dim 
         # n_expert x n_test_points 
@@ -488,7 +490,6 @@ class GPPro:
             weight_matrix = 0.5 * (np.log(prior_var_numpy) - np.log(var_s)) 
             
         if weighting == 'no_weights':
-            #weight_matrix = 1
             weight_matrix = np.ones(mu_s.shape, dtype = np.float64)
             
 
@@ -501,7 +502,7 @@ class GPPro:
         Compute unnormalized weight matrix.
 
         Args:
-            weight_matrix: dimension: n_expert x n_test_points : 
+            weight_matrix: dimension: n_expert x n_test_points :
                            unnormalized weight of ith expert at jth test point.
 
         Returns:
