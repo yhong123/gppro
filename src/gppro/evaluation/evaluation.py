@@ -1,9 +1,4 @@
 
-"""
-Created on Mon Dec  8 17:02:37 2025.
-
-@author: yhong.
-"""
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error #, log_loss, r2_score

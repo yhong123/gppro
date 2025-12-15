@@ -1,8 +1,8 @@
 
 """
-Created on Sun Nov 30 17:22:57 2025.
+Run an example of using the calibrated product-of-experts Gaussian process 
+model for a regression task.
 
-@author: yhong.
 """
 
 from data.synthetic_data import generate_synthetic_data_2

@@ -1,9 +1,4 @@
 
-"""
-Created on Sun Dec 14 18:19:25 2025.
-
-@author: yhong.
-"""
 
 import torch
 import math
