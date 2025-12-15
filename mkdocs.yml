@@ -51,7 +51,7 @@ plugins:
             - "https://docs.python.org/3/objects.inv"
           options:
             docstring_style: google
-            show_submodules: false
+            show_submodules: true
           paths: [src]
   - include-markdown:
       opening_tag: "{!"
