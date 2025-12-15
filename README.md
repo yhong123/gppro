@@ -43,7 +43,7 @@ See paper [Information-based Calibration of Uncertainty Quantification in Produc
 
 <!-- Any tools or versions of languages needed to run code. For example specific Python or Node versions. Minimum hardware requirements also go here. -->
 
-`gppro` requires Python 3.9&ndash;3.12.
+`gppro` requires Python 3.10&ndash;3.12.
 
 ### Installation
 
