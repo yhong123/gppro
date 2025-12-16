@@ -1,9 +1,5 @@
 
-"""
-Created on Fri Mar  3 17:14:25 2023.
-
-@author: yhong.
-"""
+""" The base class for any Gaussian process model. """
 
 from torch import Tensor
 import gpytorch

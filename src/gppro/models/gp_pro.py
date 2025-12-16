@@ -1,9 +1,5 @@
 
-"""
-Created on Fri Mar  3 17:14:25 2023.
-
-@author: yhong.
-"""
+""" A product-of-experts Gaussian process model with calibration. """
 
 import numpy as np
 import torch
