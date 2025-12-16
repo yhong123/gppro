@@ -1,4 +1,4 @@
-
+""" Functions for generating synthetic datasets. """
 
 import torch
 import math

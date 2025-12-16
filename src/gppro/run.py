@@ -1,9 +1,5 @@
 
-"""
-Run an example of using the calibrated product-of-experts Gaussian process 
-model for a regression task.
-
-"""
+""" Run a product-of-experts Gaussian process model for a regression task. """
 
 from data.synthetic_data import generate_synthetic_data_2
 from evaluation.evaluation import compute_evaluation
