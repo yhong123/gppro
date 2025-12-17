@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error
 
 
 def test_gpglobal_train_predict() -> None:
-    """Test is merely a placeholder."""
+    """ Test GP global model. """
     train_x1, train_y1, test_x1, test_y1 = generate_synthetic_data_1()
     gp = GPGlobal()
     gp.train(train_x1, train_y1) 
@@ -23,7 +23,7 @@ def test_gpglobal_train_predict() -> None:
     
     
 def test_gppro_train_predict() -> None:
-    """Test is merely a placeholder."""
+    """ Test product-of-experts GP model. """
     train_x1, train_y1, test_x1, test_y1 = generate_synthetic_data_1()
     gp_pro = GPPro()
     gp_pro.train(train_x1, train_y1) 
