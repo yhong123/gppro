@@ -18,7 +18,7 @@
 
 A python package implementing a product-of-experts Gaussian process model, which consists of a collection of local GP models that work collaboratively, and incorporates an information-based method to calibrate the overestimated posterior variances.
 
-For more details see the paper [Information-based Calibration of Uncertainty Quantification in Product of Gaussian Process Models](https://github.com/yhong123/doc/main/paper_1.pdf).
+For more details see the paper [Information-based Calibration of Uncertainty Quantification in Product of Gaussian Process Models](https://github.com/yhong123/doc/blob/main/paper_1.pdf).
 
 <!-- This project is developed in collaboration with the  -->
 <!-- [Centre for Advanced Research Computing](https://ucl.ac.uk/arc), University College London.  -->
